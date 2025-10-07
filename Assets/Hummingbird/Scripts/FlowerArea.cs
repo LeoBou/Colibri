@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class FlowerArea : MonoBehaviour
 {
-     // The diameter of the area where the agent and flowers can be
+    // The diameter of the area where the agent and flowers can be
     // used for observing relative distance from agent to flower
     public const float AreaDiameter = 20f;
 
@@ -40,7 +40,7 @@ public class FlowerArea : MonoBehaviour
         }
     }
 
-     /// <summary>
+    /// <summary>
     /// Gets the <see cref="Flower"/> that a nectar collider belongs to
     /// </summary>
     /// <param name="collider">The nectar collider</param>
@@ -92,13 +92,21 @@ public class FlowerArea : MonoBehaviour
                 Flower flower = child.GetComponent<Flower>();
                 if (flower != null)
                 {
-                    // Found a flower, add it to the Flowers list
+                    // --- REPLACE THIS BLOCK ---
                     Flowers.Add(flower);
-
-                    // Add the nectar collider to the lookup dictionary
-                    nectarFlowerDictionary.Add(flower.nectarCollider, flower);
-
-                    // Note: there are no flowers that are children of other flowers
+                    if (flower.nectarCollider == null)
+                    {
+                        Debug.LogError($"Flower '{flower.gameObject.name}' has null nectarCollider! Fix prefab.", flower);
+                    }
+                    else if (nectarFlowerDictionary.ContainsKey(flower.nectarCollider))
+                    {
+                        Debug.LogError($"Duplicate nectarCollider detected on flower '{flower.gameObject.name}'! Each flower must have a unique nectarCollider.", flower);
+                    }
+                    else
+                    {
+                        nectarFlowerDictionary.Add(flower.nectarCollider, flower);
+                    }
+                    // --- END ---
                 }
                 else
                 {

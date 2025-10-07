@@ -99,6 +99,7 @@ public class Flower : MonoBehaviour
         // Refill the nectar
         NectarAmount = 1f;
 
+
         // Enable the flower and nectar colliders
         flowerCollider.gameObject.SetActive(true);
         nectarCollider.gameObject.SetActive(true);
@@ -112,12 +113,42 @@ public class Flower : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        // Find the flower's mesh renderer and get the main material
         MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
-        flowerMaterial = meshRenderer.material;
+        if (meshRenderer == null)
+        {
+            Debug.LogError("Flower is missing MeshRenderer!", this);
+        }
+        else
+        {
+            flowerMaterial = meshRenderer.material;
+        }
 
-        // Find flower and nectar colliders
-        flowerCollider = transform.Find("FlowerCollider").GetComponent<Collider>();
-        nectarCollider = transform.Find("FlowerNectarCollider").GetComponent<Collider>();
+        Transform flowerColliderTransform = transform.Find("FlowerCollider");
+        if (flowerColliderTransform == null)
+        {
+            Debug.LogError("Flower child 'FlowerCollider' not found!", this);
+        }
+        else
+        {
+            flowerCollider = flowerColliderTransform.GetComponent<Collider>();
+            if (flowerCollider == null)
+            {
+                Debug.LogError("'FlowerCollider' child missing Collider component!", this);
+            }
+        }
+
+        Transform nectarColliderTransform = transform.Find("FlowerNectarCollider");
+        if (nectarColliderTransform == null)
+        {
+            Debug.LogError("Flower child 'FlowerNectarCollider' not found!", this);
+        }
+        else
+        {
+            nectarCollider = nectarColliderTransform.GetComponent<Collider>();
+            if (nectarCollider == null)
+            {
+                Debug.LogError("'FlowerNectarCollider' child missing Collider component!", this);
+            }
+        }
     }
 }

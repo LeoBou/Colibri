@@ -237,6 +237,7 @@ public class HummingbirdAgent : Agent
 
         // Apply the new rotation
         transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
+        // Small reward for movement (encourages exploration)
     }
 
 
@@ -424,13 +425,32 @@ public class HummingbirdAgent : Agent
     }
 
     /// <summary>
-    /// Called every .02 seconds
-    /// </summary>
-    private void FixedUpdate()
+/// Called every .02 seconds - add approach rewards
+/// </summary>
+private void FixedUpdate()
+{
+    // Avoids scenario where nearest flower nectar is stolen by opponent and not updated
+    if (nearestFlower != null && !nearestFlower.HasNectar)
+        UpdateNearestFlower();
+    
+    // ADD THIS NEW REWARD SYSTEM:
+    if (trainingMode && nearestFlower != null)
     {
-        // Avoids scenario where nearest flower nectar is stolen by opponent and not updated
-        if (nearestFlower != null && !nearestFlower.HasNectar)
-            UpdateNearestFlower();
+        float distanceToFlower = Vector3.Distance(beakTip.position, nearestFlower.FlowerCenterPosition);
+        
+        // Reward for being close to flowers (gradient reward)
+        if (distanceToFlower < 0.5f) // Within 50cm
+        {
+            float proximityReward = 0.001f * (0.5f - distanceToFlower);
+            AddReward(proximityReward);
+        }
+        
+        // Extra reward for getting very close (encouraging final approach)
+        if (distanceToFlower < 0.1f) // Within 10cm
+        {
+            AddReward(0.002f);
+        }
     }
+}
 
 }
